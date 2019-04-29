@@ -68,6 +68,6 @@ RUN cabal copy && cabal register
 RUN mkdir /runtime
 RUN cp -r /build/datafiles /runtime/datafiles
 WORKDIR /runtime
-RUN hackage-server init --static-dir=datafiles
-CMD hackage-server run  --static-dir=datafiles
+ADD start.sh /start.sh
+CMD ["/start.sh"]
 EXPOSE 8080
