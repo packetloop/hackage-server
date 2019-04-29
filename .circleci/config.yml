@@ -1,0 +1,16 @@
+version: 2.1
+
+orbs:
+  docker: haskell-works/docker-publish@1.1.0
+
+workflows:
+  build-app-pipelines:
+    jobs:
+      - docker/publish:
+          context: docker-bintray
+          name: Docker
+          attach-workspace: true
+          dockerfile: ./Dockerfile
+          registry: arbornetworks-docker-v2.bintray.io
+          image: hackage-server_1.0.0
+          tag: $(if [ "$CIRCLE_BRANCH" = "master" ]; then echo ${CIRCLE_BUILD_NUM}; else echo "${CIRCLE_BUILD_NUM}-${CIRCLE_SHA1:0:5}"; fi)
