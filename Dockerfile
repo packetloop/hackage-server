@@ -23,8 +23,8 @@ RUN apt-add-repository ppa:hvr/ghc
 RUN apt-get update
 
 # Dependencies
-RUN apt-get install -yy unzip libicu-dev postfix
-RUN apt-get install -y ghc-8.2.1 cabal-install-2.0
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -yy unzip libicu-dev postfix
+RUN apt-get install -y ghc-8.2.2 cabal-install-2.4
 ENV PATH /opt/ghc/bin:$PATH
 RUN cabal update
 
@@ -68,6 +68,6 @@ RUN cabal copy && cabal register
 RUN mkdir /runtime
 RUN cp -r /build/datafiles /runtime/datafiles
 WORKDIR /runtime
-RUN hackage-server init --static-dir=datafiles
-CMD hackage-server run  --static-dir=datafiles
+ADD start.sh /start.sh
+CMD ["/start.sh"]
 EXPOSE 8080
