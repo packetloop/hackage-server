@@ -302,7 +302,7 @@ impl server = logExceptions $
   where
     serverTree :: ServerTree (DynamicPath -> ServerPartE Response)
     serverTree =
-        fmap (serveResource errHandlers)
+        fmap hookGuard
       -- ServerTree Resource
       . foldl' (\acc res -> addServerNode (resourceLocation res) res acc) serverTreeEmpty
       -- [Resource]
@@ -330,6 +330,14 @@ impl server = logExceptions $
                           Lifted.throwIO (e :: SomeException)
 
     verbosity = serverVerbosity (serverEnv server)
+
+    hookGuard :: Resource -> DynamicPath -> ServerPartE Response
+    hookGuard res =
+        let f = serveResource errHandlers res
+        in
+          \dp -> do
+            guardAuthorised_ (serverUserFeature server) [AnyKnownUser]
+            f dp
 
 data TempServer = TempServer ThreadId
 
